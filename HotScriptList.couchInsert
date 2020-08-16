@@ -1,0 +1,72 @@
+///////////////////////////////////////////////
+//HotScriptList.couchInsert
+//
+//Create HotScriptList for couch insert scriptsv
+//
+//About: Script Selector
+//
+//Modified:
+//01 2016 Becket Hui
+////////////////////////////////////
+// Set Base paths for the Scripts
+Store.StringAt.BasePath =  GetEnv.PINN_SITE;
+Store.At.BasePath.AppendString = "/Scripts/";
+Store.StringAt.UVAMenuPath    = GetEnv.UVA_SCRIPT;
+Store.At.UVAMenuPath.AppendString = "/menuScripts/";
+
+// -------------------------------
+// create script to remove surplus buttons
+Store.StringAt.FileName = Store.At.UVAMenuPath.String;
+Store.At.FileName.AppendString = "/utilities/RemoveSurplusButtons.Script";
+// load to remove surplus buttons
+LoadNoCheckSum = Store.At.FileName.String;
+
+// -------------------------------
+// Create new HotScript list
+// Replace the 6 buttons (with index 0... 5) which are left over
+// with new functionality. These can also be filled with empty titles
+// when less than 6 buttons are needed.
+// Note: Exceeding ~12 seems to cause the second child button to crash.
+
+/* set the script home directory */
+Store.StringAt.ScriptHome = Store.At.UVAMenuPath.String;
+Store.At.ScriptHome.AppendString = "Couch_Insert/";
+/*-------------------------------*/
+
+// when less than 6 buttons are needed.
+HotScriptList.#"#0".ScriptName = "Main Menu";
+
+HotScriptList.#"#0".ScriptFile = "/usr/local/PinnacleSiteData/clinical/Scripts/ScriptManagement/MainScriptMenu.Script";
+//
+HotScriptList.#"#1".ScriptName = " User Main Menu";
+Store.StringAt.FileName = Store.At.BasePath.Value;
+Store.At.FileName.AppendString = "GoBack.Script";
+HotScriptList.#"#1".ScriptFile = Store.At.FileName.Value;
+//
+HotScriptList.#"#2".ScriptName = "  Insert Truebeam Couch";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "couchTB_Insert.Script";
+HotScriptList.#"#2".ScriptFile = Store.At.FileName.String;
+//
+HotScriptList.#"#3".ScriptName = "  Insert Trilogy Couch-Rails in";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "couchTrilIn_Insert.Script";
+HotScriptList.#"#3".ScriptFile = Store.At.FileName.String;
+//
+HotScriptList.#"#4".ScriptName = "  Insert Trilogy Couch-Rails out";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "couchTrilOut_Insert.Script";
+HotScriptList.#"#4".ScriptFile = Store.At.FileName.String;
+//
+//
+HotScriptList.#"#5".ScriptName = "  Insert Trilogy Couch-No rail";
+Store.StringAt.FileName = Store.At.ScriptHome.String;
+Store.At.FileName.AppendString = "couchTrilNoR_Insert.Script";
+HotScriptList.#"#5".ScriptFile = Store.At.FileName.String;
+//
+
+
+Store.FreeAt.FileName = "";
+Store.FreeAt.ScriptHome = "";
+
+Echo = "Completed loading HotScriptList.couchInsert";

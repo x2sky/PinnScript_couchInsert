@@ -1,0 +1,186 @@
+////////////////////////////////////
+//couchTrilNoR_Insert.Script
+//Insert the Trilogy treatment couch and no rail into the CT data set
+//
+//Required files that are placed in Script Home:
+//couchTrilNoR_Insert.py
+//
+//Modified:
+//2016 02 v1 Becket Hui
+//2016 04 v2 Becket Hui change names
+//2017 01 v2.1 Becket Hui add warnaboutcouchremoval to script
+////////////////////////////////////
+//!!create class that stores variables necessary in this script!!//
+Store.At.Couch = StringKeyDict {};
+//!!Script Home!!//
+Store.At.Couch.At.ScriptHome = SimpleString{String = "/home/ch4jm/PinnacleScripts/Couch_Insert/";};
+///////////////////
+Store.At.Couch.At.PatientPath = SimpleString{};
+Store.At.Couch.At.PatientPath.AppendString = GetEnv.PATIENTS;
+Store.At.Couch.At.PatientPath.AppendString = "/";
+Store.At.Couch.At.PatientPath.AppendString = PatientDirectory;
+
+//save store path//
+Store.At.Couch.StringAt.Storefile = Store.At.Couch.At.PatientPath.String;
+Store.At.Couch.At.Storefile.AppendString = "Store.Couch";
+
+//Obtain necessary coordinate info//
+Store.At.Couch.FloatAt.CouchRemoveY = TrialList.Current.CouchRemovalYCoordinate;
+Store.At.Couch.FloatAt.X0 = VolumeList.Current.Origin.X;
+Store.At.Couch.FloatAt.NX = VolumeList.Current.Dimension.X;
+Store.At.Couch.FloatAt.dX = VolumeList.Current.VoxelSize.X;
+Store.At.Couch.FloatAt.Y0 = VolumeList.Current.Origin.Y;
+Store.At.Couch.FloatAt.NY = VolumeList.Current.Dimension.Y;
+Store.At.Couch.FloatAt.dY = VolumeList.Current.VoxelSize.Y;
+Store.At.Couch.FloatAt.Z0 = VolumeList.Current.Origin.Z;
+Store.At.Couch.FloatAt.NZ = VolumeList.Current.Dimension.Z;
+Store.At.Couch.FloatAt.dZ = VolumeList.Current.VoxelSize.Z;
+
+//Add couch lateral shift//
+Store.At.Couch.FloatAt.XShift = 0;
+//Create widget//
+Store.At.rNWin.Unrealize = "close win";
+Store.FreeAt.rNWin = "free win parameters";
+
+Store.At.rNWin = GeoForm{
+Name = "CouchWindow";
+IsModal = 0;
+};
+//create top level//
+Store.At.rNWin.WidgetList.GeoWidget = {
+Name = "TopLevel";
+WidgetClass = "DrawingArea";
+Label = "Couch Insertion Window";
+X = 300;
+Y = 100;
+Width = 300;
+Height = 120;
+};
+//some description on window//
+Store.At.rNWin.AddChild = "";
+Store.At.rNWin.WidgetList.Last = {
+Name = "CWin_Descriptions1";
+ParentName = "TopLevel";
+WidgetClass = "Label";
+X = 10;
+Y = 15;
+Width = 280;
+Height = 20;
+UseDefaultSize = 1;
+Label = "Couch lateral shift (to the right)";
+};
+//separator//
+Store.At.rNWin.AddChild = "";
+Store.At.rNWin.WidgetList.Last = {
+Name = "HSep1";
+ParentName = "TopLevel";
+WidgetClass = "Separator";
+X = 8;
+Y = 40;
+Width = 290;
+Height = 10;
+};
+//widget for lateral shift//
+Store.At.rNWin.AddChild = "";
+Store.At.rNWin.WidgetList.Last = {
+Name = "LatShift";
+ParentName = "TopLevel";
+WidgetClass = "Text";
+X = 8;
+Y = 48;
+Width = 100;
+Height = 20;
+IgnoreReadOnly = 1;
+UseDefaultSize = 0;
+ResetDependenciesWhenRealized = 1;
+QueryValueKey = "Store.At.Couch.At.XShift.Value";
+AddAction = "Store.At.Couch.At.XShift.Value";
+};
+//cm (text)//
+Store.At.rNWin.AddChild = "";
+Store.At.rNWin.WidgetList.Last = {
+Name = "CWin_Descriptions2";
+ParentName = "TopLevel";
+WidgetClass = "Label";
+X = 115;
+Y = 52;
+Width = 60;
+Height = 20;
+UseDefaultSize = 0;
+Label = "cm";
+};
+//create OK button//
+Store.At.rNWin.AddChild = "";
+Store.At.rNWin.WidgetList.Last = {
+Name = "Window_AddButton";
+ParentName = "TopLevel";
+WidgetClass = "PushButton";
+X = 160;
+Y = 52;
+Width = 60;
+Height = 20;
+Label = "OK";
+//add hourglass and close pop up window//
+AddAction = "";
+ReplaceCurrentAction = "WaitMessage = start hourglass";
+AddAction = "";
+ReplaceCurrentAction = "Store.At.rNWin.Unrealize";
+//save store//
+AddAction = "";
+ReplaceCurrentAction = "Store.Save = Store.At.Couch.At.Storefile.String";
+//run python and create sub-script that creates the couch//
+AddAction = "";
+ReplaceCurrentAction = "Store.At.Couch.StringAt.TempCommand = python \"";
+AddAction = "";
+ReplaceCurrentAction = "Store.At.Couch.At.TempCommand.AppendString = Store.At.Couch.At.ScriptHome.String";
+AddAction = "";
+ReplaceCurrentAction = "Store.At.Couch.At.TempCommand.AppendString = couchTrilNoR_Insert.py\" \"";
+AddAction = "";
+ReplaceCurrentAction = "Store.At.Couch.At.TempCommand.AppendString = Store.At.Couch.At.PatientPath.String";
+AddAction = "";
+ReplaceCurrentAction = "Store.At.Couch.At.TempCommand.AppendString = \"";
+AddAction = "";
+ReplaceCurrentAction = "SpawnCommand = Store.At.Couch.At.TempCommand.String";
+//delete current couch//
+AddAction = "";
+ReplaceCurrentAction = "RoiList.couchTrueBeam.OverrideDensity = 0";
+AddAction = "";
+ReplaceCurrentAction = "RoiList.couchTrueBeam.Destroy";
+AddAction = "";
+ReplaceCurrentAction = "RoiList.couchTrilogy.OverrideDensity = 0";
+AddAction = "";
+ReplaceCurrentAction = "RoiList.couchTrilogy.Destroy";
+AddAction = "";
+ReplaceCurrentAction = "RoiList.couchRailsTrilogy.OverrideDensity = 0";
+AddAction = "";
+ReplaceCurrentAction = "RoiList.couchRailsTrilogy.Destroy";
+AddAction = "";
+ReplaceCurrentAction = "RoiList.couchAirOverride.OverrideDensity = 0";
+AddAction = "";
+ReplaceCurrentAction = "RoiList.couchAirOverride.Destroy";
+//run the sub-script to create the couch//
+AddAction = "";
+ReplaceCurrentAction = "Store.At.Couch.StringAt.TempCommand = Store.At.Couch.At.PatientPath.String";
+AddAction = "";
+ReplaceCurrentAction = "Store.At.Couch.At.TempCommand.AppendString = createcouchTril.Script";
+AddAction = "";
+ReplaceCurrentAction = "Script.ExecuteNow = Store.At.Couch.At.TempCommand.String";
+//cancel remove couch//
+AddAction = "";
+ReplaceCurrentAction = "TrialList.Current.RemoveCouchFromScan = 0";
+//return view to at POI//
+AddAction = "";
+ReplaceCurrentAction = "ViewWindowList.Current.SetSliceToCurrentPoi";
+//clear window and store//
+AddAction = "";
+ReplaceCurrentAction = "TrialList.#*.WarnAboutCouchRemoval = 0";
+AddAction = "";
+ReplaceCurrentAction = "WaitMessageOff = finish hourglass";
+AddAction = "";
+ReplaceCurrentAction = "Store.FreeAt.Couch";
+AddAction = "";
+ReplaceCurrentAction = "Store.FreeAt.rNWin";
+};
+
+//create the window//
+Store.At.rNWin.Create = "";
